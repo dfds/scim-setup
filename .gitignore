@@ -25,3 +25,5 @@ go.work
 # Misc
 .idea/
 .env
+.scim-setup
+users.txt
