@@ -9,22 +9,23 @@ import (
 )
 
 // ReadConfigFile reads environment variables from a file
-func ReadConfigFile(configFile string) {
+func ReadConfigFile(configFile string) (bool, error) {
 	logger, _ := zap.NewDevelopment()
 	defer func(logger *zap.Logger) {
 		err := logger.Sync()
 		if err != nil {
-
 		}
 	}(logger)
 	sugar := logger.Sugar()
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		sugar.Fatal(err.Error())
+		sugar.Error(err.Error())
+		return false, err
 	}
 	workDir, err := os.Getwd()
 	if err != nil {
-		sugar.Fatal(err.Error())
+		sugar.Error(err.Error())
+		return false, err
 	}
 	viper.AddConfigPath(homeDir)
 	viper.AddConfigPath(workDir)
@@ -33,9 +34,11 @@ func ReadConfigFile(configFile string) {
 
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			sugar.Fatalf("Configuration file %s wasn't found in neither %s or %s", configFile, homeDir, workDir)
+			sugar.Errorf("Configuration file %s wasn't found in neither %s or %s", configFile, homeDir, workDir)
+			return false, err
 		} else {
-			sugar.Fatalf("Unknown error when reading configuration file: %v", err.Error())
+			sugar.Errorf("Unknown error when reading configuration file: %v", err.Error())
+			return false, err
 		}
 	}
 
@@ -43,7 +46,8 @@ func ReadConfigFile(configFile string) {
 	for _, v := range s {
 		err := os.Setenv(strings.ToUpper(v), fmt.Sprint(viper.Get(v)))
 		if err != nil {
-			return
+			return false, err
 		}
 	}
+	return true, nil
 }

@@ -7,7 +7,10 @@ import (
 )
 
 func init() {
-	config.ReadConfigFile(".scim-setup")
+	_, err := config.ReadConfigFile(".scim-setup")
+	if err != nil {
+		return
+	}
 }
 
 func TestGetUser(t *testing.T) {

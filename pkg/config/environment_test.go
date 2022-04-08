@@ -10,47 +10,35 @@ const (
 	TestId string = "00000-00000-00000-00000"
 )
 
+func init() {
+	ReadConfigFile(".scim-setup")
+}
+
 func TestEnvVar(t *testing.T) {
 	a := assert.New(t)
-	err := os.Setenv("DUMMY_VAR", "dummy")
+	err := os.Setenv("DUMMY_VAR", TestId)
 	if err != nil {
 		return
 	}
-	a.Equal("dummy", envVar("DUMMY_VAR"))
+	a.Equal(TestId, envVar("DUMMY_VAR"))
 }
 
 func TestGroupId(t *testing.T) {
 	a := assert.New(t)
-	err := os.Setenv("AZURE_GROUP_OBJECT_ID", TestId)
-	if err != nil {
-		return
-	}
-	a.Equal(TestId, GroupId())
+	a.NotEqualf(TestId, GroupId(), "They are not supposed to be equal, but they are.")
 }
 
 func TestClientId(t *testing.T) {
 	a := assert.New(t)
-	err := os.Setenv("AZURE_CLIENT_ID", TestId)
-	if err != nil {
-		return
-	}
-	a.Equal(TestId, ClientId())
+	a.NotEqualf(TestId, ClientId(), "They are not supposed to be equal, but they are.")
 }
 
 func TestClientSecret(t *testing.T) {
 	a := assert.New(t)
-	err := os.Setenv("AZURE_CLIENT_SECRET", TestId)
-	if err != nil {
-		return
-	}
-	a.Equal(TestId, ClientSecret())
+	a.NotEqualf(TestId, ClientSecret(), "They are not supposed to be equal, but they are.")
 }
 
 func TestTenantId(t *testing.T) {
 	a := assert.New(t)
-	err := os.Setenv("AZURE_TENANT_ID", TestId)
-	if err != nil {
-		return
-	}
-	a.Equal(TestId, TenantId())
+	a.NotEqualf(TestId, TenantId(), "They are not supposed to be equal, but they are.")
 }

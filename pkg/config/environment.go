@@ -11,13 +11,12 @@ func envVar(variable string) string {
 	defer func(logger *zap.Logger) {
 		err := logger.Sync()
 		if err != nil {
-
 		}
 	}(logger)
 	sugar := logger.Sugar()
 	value, exist := os.LookupEnv(variable)
 	if !exist {
-		sugar.Fatalf("You need to export environment variable %s", variable)
+		sugar.Errorf("You need to export environment variable %s", variable)
 	}
 	return value
 }

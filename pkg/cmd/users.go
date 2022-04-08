@@ -16,7 +16,6 @@ func LoadUsersIntoGroups(fileName string) {
 	defer func(logger *zap.Logger) {
 		err := logger.Sync()
 		if err != nil {
-
 		}
 	}(logger)
 	sugar := logger.Sugar()

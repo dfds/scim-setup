@@ -16,7 +16,6 @@ func GetGroupName(client *msgraphsdk.GraphServiceClient, groupId string) string 
 	defer func(logger *zap.Logger) {
 		err := logger.Sync()
 		if err != nil {
-
 		}
 	}(logger)
 	sugar := logger.Sugar()
@@ -33,7 +32,6 @@ func AddMemberToGroup(client *msgraphsdk.GraphServiceClient, groupId string, use
 	defer func(logger *zap.Logger) {
 		err := logger.Sync()
 		if err != nil {
-
 		}
 	}(logger)
 	sugar := logger.Sugar()
