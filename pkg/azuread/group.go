@@ -67,5 +67,11 @@ func AddMemberToGroup(client *msgraphsdk.GraphServiceClient, groupId string, use
 		sugar.Fatal(err.Error())
 	}
 
-	sugar.Infof("Added %s to %s group", GetUserName(client, userId), GetGroupName(client, config.GroupId()))
+	userName, err := GetUserName(client, userId)
+	if err != nil {
+		sugar.Error(err.Error())
+		sugar.Info("TODO")
+	} else {
+		sugar.Infof("Added %s to %s group", userName, GetGroupName(client, config.GroupId()))
+	}
 }

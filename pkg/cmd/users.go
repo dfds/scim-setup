@@ -44,6 +44,11 @@ func LoadUsersIntoGroups(fileName string) {
 	users := filedata.GetUsers(fileName)
 
 	for _, user := range users {
-		azuread.AddMemberToGroup(client, config.GroupId(), azuread.GetUserId(client, user))
+		userId, err := azuread.GetUserId(client, user)
+		if err != nil {
+			sugar.Infof("User %s wasn't found in Azure AD", user)
+		} else {
+			azuread.AddMemberToGroup(client, config.GroupId(), userId)
+		}
 	}
 }

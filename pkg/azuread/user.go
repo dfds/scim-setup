@@ -6,7 +6,7 @@ import (
 )
 
 // GetUser returns the ObjectId, DisplayName and Email address of an Azure AD User
-func GetUser(client *msgraphsdk.GraphServiceClient, user string) (string, string, string) {
+func GetUser(client *msgraphsdk.GraphServiceClient, user string) (string, string, string, error) {
 	logger, _ := zap.NewDevelopment()
 	defer func(logger *zap.Logger) {
 		err := logger.Sync()
@@ -17,25 +17,35 @@ func GetUser(client *msgraphsdk.GraphServiceClient, user string) (string, string
 	sugar := logger.Sugar()
 	usr, err := client.UsersById(user).Get(nil)
 	if err != nil {
-		sugar.Fatal(err.Error())
+		sugar.Error(err.Error())
+		return "", "", "", err
 	}
-	return *usr.GetId(), *usr.GetDisplayName(), *usr.GetMail()
+	return *usr.GetId(), *usr.GetDisplayName(), *usr.GetMail(), nil
 }
 
 // GetUserId returns the Object Id for an Azure AD user
-func GetUserId(client *msgraphsdk.GraphServiceClient, user string) string {
-	id, _, _ := GetUser(client, user)
-	return id
+func GetUserId(client *msgraphsdk.GraphServiceClient, user string) (string, error) {
+	id, _, _, err := GetUser(client, user)
+	if err != nil {
+		return "", err
+	}
+	return id, err
 }
 
 // GetUserName returns the Display Name for an Azure AD user
-func GetUserName(client *msgraphsdk.GraphServiceClient, user string) string {
-	_, name, _ := GetUser(client, user)
-	return name
+func GetUserName(client *msgraphsdk.GraphServiceClient, user string) (string, error) {
+	_, name, _, err := GetUser(client, user)
+	if err != nil {
+		return "", err
+	}
+	return name, nil
 }
 
 // GetUserEmail returns the mail address for an Azure AD user
-func GetUserEmail(client *msgraphsdk.GraphServiceClient, user string) string {
-	_, _, email := GetUser(client, user)
-	return email
+func GetUserEmail(client *msgraphsdk.GraphServiceClient, user string) (string, error) {
+	_, _, email, err := GetUser(client, user)
+	if err != nil {
+		return "", err
+	}
+	return email, nil
 }
