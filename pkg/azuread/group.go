@@ -63,6 +63,7 @@ func AddMemberToGroup(client *msgraphsdk.GraphServiceClient, groupId string, use
 	var res map[string]interface{}
 	err = json.NewDecoder(resp.Body).Decode(&res)
 	if err != nil {
+		sugar.Errorf("The body response was: \n%v", resp.Body)
 		sugar.Fatal(err.Error())
 	}
 
