@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/dfds/scim-setup/pkg/config"
-	"log"
+	"go.uber.org/zap"
 	"net/http"
 	"net/url"
 )
@@ -16,6 +16,14 @@ const (
 
 // GetBearerToken returns a token from Azure AD
 func GetBearerToken() string {
+	logger, _ := zap.NewDevelopment()
+	defer func(logger *zap.Logger) {
+		err := logger.Sync()
+		if err != nil {
+
+		}
+	}(logger)
+	sugar := logger.Sugar()
 	address := fmt.Sprintf("https://login.microsoftonline.com/%s/oauth2/v2.0/token", config.TenantId())
 
 	data := url.Values{
@@ -28,15 +36,15 @@ func GetBearerToken() string {
 	resp, err := http.PostForm(address, data)
 
 	if err != nil {
-		log.Fatal(err.Error())
+		sugar.Fatal(err.Error())
 	}
 
 	var res map[string]interface{}
 
 	err = json.NewDecoder(resp.Body).Decode(&res)
 	if err != nil {
-		log.Printf("The bearer the token is missing. Returning empty string.")
-		log.Println(err.Error())
+		sugar.Warn("The bearer the token is missing. Returning empty string.")
+		sugar.Warn(err.Error())
 		return ""
 	}
 

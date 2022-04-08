@@ -2,20 +2,28 @@ package filedata
 
 import (
 	"bufio"
-	"log"
+	"go.uber.org/zap"
 	"os"
 )
 
 // GetUsers return a slice of user emails from a file
 func GetUsers(fileName string) []string {
+	logger, _ := zap.NewDevelopment()
+	defer func(logger *zap.Logger) {
+		err := logger.Sync()
+		if err != nil {
+
+		}
+	}(logger)
+	sugar := logger.Sugar()
 	f, err := os.Open(fileName)
 	if err != nil {
-		log.Fatal(err.Error())
+		sugar.Fatal(err.Error())
 	}
 	defer func(f *os.File) {
 		err := f.Close()
 		if err != nil {
-			log.Fatal(err.Error())
+			sugar.Fatal(err.Error())
 		}
 	}(f)
 
@@ -27,7 +35,7 @@ func GetUsers(fileName string) []string {
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Fatal(err.Error())
+		sugar.Fatal(err.Error())
 	}
 
 	return users

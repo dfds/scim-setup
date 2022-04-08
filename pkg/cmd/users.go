@@ -7,27 +7,35 @@ import (
 	"github.com/dfds/scim-setup/pkg/filedata"
 	msazureauth "github.com/microsoft/kiota/authentication/go/azure"
 	msgraphsdk "github.com/microsoftgraph/msgraph-sdk-go"
-	"log"
+	"go.uber.org/zap"
 )
 
 // LoadUsersIntoGroups reads user email addresses from a text file, then loads each user into an Azure AD Group
 func LoadUsersIntoGroups(fileName string) {
+	logger, _ := zap.NewDevelopment()
+	defer func(logger *zap.Logger) {
+		err := logger.Sync()
+		if err != nil {
+
+		}
+	}(logger)
+	sugar := logger.Sugar()
 	cred, err := azidentity.NewClientSecretCredential(config.TenantId(), config.ClientId(),
 		config.ClientSecret(), &azidentity.ClientSecretCredentialOptions{})
 
 	if err != nil {
-		log.Fatalf("Error creating credentials for MS Graph: %v\n", err.Error())
+		sugar.Fatalf("Error creating credentials for MS Graph: %v", err.Error())
 	}
 
 	auth, err := msazureauth.NewAzureIdentityAuthenticationProviderWithScopes(cred, []string{azuread.GraphScope})
 	if err != nil {
-		log.Fatalf("Error creation authentication provider for MS Graph: %v\n", err.Error())
+		sugar.Fatalf("Error creation authentication provider for MS Graph: %v", err.Error())
 		return
 	}
 
 	adapter, err := msgraphsdk.NewGraphRequestAdapter(auth)
 	if err != nil {
-		log.Fatalf("Error creating adapter for MS Graph: %v\n", err.Error())
+		sugar.Fatalf("Error creating adapter for MS Graph: %v", err.Error())
 		return
 	}
 

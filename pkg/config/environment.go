@@ -1,15 +1,23 @@
 package config
 
 import (
-	"log"
+	"go.uber.org/zap"
 	"os"
 )
 
 // envVar checks if environment variable has been defined. If it has, its value gets returned.
 func envVar(variable string) string {
+	logger, _ := zap.NewDevelopment()
+	defer func(logger *zap.Logger) {
+		err := logger.Sync()
+		if err != nil {
+
+		}
+	}(logger)
+	sugar := logger.Sugar()
 	value, exist := os.LookupEnv(variable)
 	if !exist {
-		log.Fatalf("You need to export environment variable %s", variable)
+		sugar.Fatalf("You need to export environment variable %s", variable)
 	}
 	return value
 }
