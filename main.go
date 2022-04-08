@@ -13,6 +13,11 @@ func main() {
 	if len(args) >= 2 {
 		usersFile = args[1]
 	}
-	config.ReadConfigFile(".scim-setup")
-	cmd.LoadUsersIntoGroups(usersFile)
+	configLoaded, err := config.ReadConfigFile(".scim-setup")
+	if err != nil {
+		return
+	}
+	if configLoaded {
+		cmd.LoadUsersIntoGroups(usersFile)
+	}
 }
