@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	"github.com/dfds/scim-setup/pkg/config"
 	msgraphsdk "github.com/microsoftgraph/msgraph-sdk-go"
 	"go.uber.org/zap"
-	"net/http"
 )
 
 // GetGroupName takes a GraphServiceClient and a group object id, and return the name of an Azure AD Group
@@ -21,7 +22,7 @@ func GetGroupName(client *msgraphsdk.GraphServiceClient, groupId string) string 
 	sugar := logger.Sugar()
 	grp, err := client.GroupsById(groupId).Get(nil)
 	if err != nil {
-		sugar.Fatal(err.Error())
+		sugar.Error(err.Error())
 	}
 	return *grp.GetDisplayName()
 }
@@ -41,7 +42,7 @@ func AddMemberToGroup(client *msgraphsdk.GraphServiceClient, groupId string, use
 	values := map[string]string{"@odata.id": memberUrl}
 	payload, err := json.Marshal(values)
 	if err != nil {
-		sugar.Fatal(err.Error())
+		sugar.Error(err.Error())
 	}
 
 	httpClient := &http.Client{}
@@ -51,11 +52,11 @@ func AddMemberToGroup(client *msgraphsdk.GraphServiceClient, groupId string, use
 	resp, err := httpClient.Do(req)
 
 	if err != nil {
-		sugar.Fatal(err.Error())
+		sugar.Error(err.Error())
 	}
 
 	if resp.StatusCode == 401 {
-		sugar.Fatal(resp.Status)
+		sugar.Error(resp.Status)
 	}
 
 	userName, err := GetUserName(client, userId)
