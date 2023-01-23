@@ -2,29 +2,24 @@ package config
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
-	"go.uber.org/zap"
 	"os"
 	"strings"
+
+	"github.com/dfds/scim-setup/pkg/logging"
+	"github.com/spf13/viper"
 )
 
 // ReadConfigFile reads environment variables from a file
 func ReadConfigFile(configFile string) (bool, error) {
-	logger, _ := zap.NewDevelopment()
-	defer func(logger *zap.Logger) {
-		err := logger.Sync()
-		if err != nil {
-		}
-	}(logger)
-	sugar := logger.Sugar()
+	log := logging.GetLogger()
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		sugar.Error(err.Error())
+		log.Error(err.Error())
 		return false, err
 	}
 	workDir, err := os.Getwd()
 	if err != nil {
-		sugar.Error(err.Error())
+		log.Error(err.Error())
 		return false, err
 	}
 	viper.AddConfigPath(homeDir)
@@ -34,10 +29,10 @@ func ReadConfigFile(configFile string) (bool, error) {
 
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			sugar.Errorf("Configuration file %s wasn't found in neither %s or %s", configFile, homeDir, workDir)
+			log.Errorf("Configuration file %s wasn't found in neither %s or %s", configFile, homeDir, workDir)
 			return false, err
 		} else {
-			sugar.Errorf("Unknown error when reading configuration file: %v", err.Error())
+			log.Errorf("Unknown error when reading configuration file: %v", err.Error())
 			return false, err
 		}
 	}

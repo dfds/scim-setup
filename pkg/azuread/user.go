@@ -1,22 +1,18 @@
 package azuread
 
 import (
+	"context"
+
+	"github.com/dfds/scim-setup/pkg/logging"
 	msgraphsdk "github.com/microsoftgraph/msgraph-sdk-go"
-	"go.uber.org/zap"
 )
 
 // GetUser returns the ObjectId, DisplayName and Email address of an Azure AD User
 func GetUser(client *msgraphsdk.GraphServiceClient, user string) (string, string, string, error) {
-	logger, _ := zap.NewDevelopment()
-	defer func(logger *zap.Logger) {
-		err := logger.Sync()
-		if err != nil {
-		}
-	}(logger)
-	sugar := logger.Sugar()
-	usr, err := client.UsersById(user).Get(nil)
+	log := logging.GetLogger()
+	usr, err := client.UsersById(user).Get(context.Background(), nil)
 	if err != nil {
-		sugar.Error(err.Error())
+		log.Error(err.Error())
 		return "", "", "", err
 	}
 	return *usr.GetId(), *usr.GetDisplayName(), *usr.GetMail(), nil

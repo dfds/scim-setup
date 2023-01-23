@@ -1,9 +1,11 @@
 package config
 
 import (
-	"github.com/stretchr/testify/assert"
+	"log"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const (
@@ -11,7 +13,10 @@ const (
 )
 
 func init() {
-	ReadConfigFile(".scim-setup")
+	_, err := ReadConfigFile(".scim-setup")
+	if err != nil {
+		log.Fatal("Environment file .scim-setup is not found")
+	}
 }
 
 func TestEnvVar(t *testing.T) {

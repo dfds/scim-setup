@@ -2,27 +2,22 @@ package filedata
 
 import (
 	"bufio"
-	"go.uber.org/zap"
 	"os"
+
+	"github.com/dfds/scim-setup/pkg/logging"
 )
 
 // GetUsers return a slice of user emails from a file
 func GetUsers(fileName string) []string {
-	logger, _ := zap.NewDevelopment()
-	defer func(logger *zap.Logger) {
-		err := logger.Sync()
-		if err != nil {
-		}
-	}(logger)
-	sugar := logger.Sugar()
+	log := logging.GetLogger()
 	f, err := os.Open(fileName)
 	if err != nil {
-		sugar.Fatal(err.Error())
+		log.Fatal(err.Error())
 	}
 	defer func(f *os.File) {
 		err := f.Close()
 		if err != nil {
-			sugar.Fatal(err.Error())
+			log.Fatal(err.Error())
 		}
 	}(f)
 
@@ -34,7 +29,7 @@ func GetUsers(fileName string) []string {
 	}
 
 	if err := scanner.Err(); err != nil {
-		sugar.Fatal(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	return users
